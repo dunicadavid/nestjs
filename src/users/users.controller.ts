@@ -1,12 +1,11 @@
 import { Get, Query, Post, Body, Put, Param, Res, HttpStatus, UseGuards, UseInterceptors, UseFilters } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import { User } from 'src/interfaces/user.interface';
 import { UsersService  } from './users.service';
-import { UserValidationPipe } from 'src/pipes/validation.pipe';
 import { AuthGuard } from '../guards/users.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { UserDto } from './users.dto';
 
 
 @Controller('users')
@@ -15,17 +14,21 @@ import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 @UseFilters(new HttpExceptionFilter())
 export class UsersController {
   constructor(private usersService: UsersService) {}
-
+          
   @Post()
   @Roles('admin')
-  create(@Body(new UserValidationPipe()) user: User) {
-    this.usersService.create(user);
+  create(@Body() userDto: UserDto) {
+    try {
+      this.usersService.create(userDto);
+    } catch (err) {
+      throw err;
+    }
   }
 
   @Get('/:id')
   @Roles('admin','user')
   findOne(@Param('id') id: any): any  {
-    return this.usersService.findOne(parseInt(id));
+    return this.usersService.findOne(id);
   } 
 
   @Get()
