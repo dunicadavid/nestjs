@@ -6,18 +6,22 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   async create(userDto: UserDto): Promise<User> {
-    const createUser = new this.userModel(userDto);
-    return createUser.save();
+    try {
+      const createUser = new this.userModel(userDto);
+      return createUser.save();
+    } catch (err) {
+      throw err;
+    }
   }
 
   findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find().select({'__v': false}).lean().exec();
   }
 
   findOne(id: string): Promise<User> {
-    return this.userModel.findById(id).exec();
+    return this.userModel.findById(id).lean().exec();
   }
 }

@@ -5,22 +5,19 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-    @Prop({required: false, type: mongoose.Schema.Types.ObjectId})
-    id: string;
-
-    @Prop({required: true, type: mongoose.Schema.Types.String})
+    @Prop({required: true, type: String})
     name: string;
 
-    @Prop({required: true, type: mongoose.Schema.Types.Number})
+    @Prop({required: true, type: Number})
     age: number;
 
-    @Prop({required: true, type: mongoose.Schema.Types.String})
+    @Prop({required: true, type: String})
     email: string;
 
-    @Prop({required: true, type: mongoose.Schema.Types.String})
+    @Prop({required: true, type: String})
     mobile: string;
 
-    @Prop({required: true, type: mongoose.Schema.Types.String})
+    @Prop({required: true, type: String})
     password: string;
 
 }

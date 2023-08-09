@@ -11,23 +11,19 @@ import { UserDto } from './users.dto';
 @Controller('users')
 @UseGuards(AuthGuard)
 @UseInterceptors(LoggingInterceptor)
-@UseFilters(new HttpExceptionFilter())
+//@UseFilters(new HttpExceptionFilter())
 export class UsersController {
   constructor(private usersService: UsersService) {}
           
   @Post()
   @Roles('admin')
   create(@Body() userDto: UserDto) {
-    try {
-      this.usersService.create(userDto);
-    } catch (err) {
-      throw err;
-    }
+    return this.usersService.create(userDto);
   }
 
   @Get('/:id')
   @Roles('admin','user')
-  findOne(@Param('id') id: any): any  {
+  findOne(@Param('id') id: any) {
     return this.usersService.findOne(id);
   } 
 

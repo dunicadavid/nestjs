@@ -17,3 +17,11 @@ export class UserDto {
   @Min(0)
   age: number;
 }
+
+export class CreateUserDto extends UserDto {
+
+}
+
+export class UpdateUserDto extends UserDto{
+
+}
