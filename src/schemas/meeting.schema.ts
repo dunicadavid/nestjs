@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from './user.schema';
 
-export type MeetingDocument = HydratedDocument<Meeting>;
+export type MeetingPOSTDocument = HydratedDocument<MeetingPOST>;
+export type MeetingGETDocument = HydratedDocument<MeetingGET>;
 
 @Schema()
-export class Meeting {
+export class MeetingPOST {
+
     @Prop({ type: Date, required: true })
     startDate: Date;
   
@@ -19,4 +20,14 @@ export class Meeting {
     users: mongoose.Types.ObjectId[];
 }
 
-export const MeetingSchema = SchemaFactory.createForClass(Meeting);
+@Schema()
+export class MeetingGET extends MeetingPOST {
+
+    @Prop({ type: mongoose.Types.ObjectId, required: true })
+    _id: mongoose.Types.ObjectId;
+}
+
+
+
+export const MeetingPOSTSchema = SchemaFactory.createForClass(MeetingPOST);
+export const MeetingGETSchema = SchemaFactory.createForClass(MeetingGET);

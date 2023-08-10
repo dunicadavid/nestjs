@@ -4,11 +4,14 @@ import * as dotenv from 'dotenv';
 import helmet from 'helmet';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { HttpStatus } from '@nestjs/common';
+import { CronService } from './providers/cron.service';
 
 
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
+  const cronService = app.get(CronService);
+  cronService.startCronJob();
   app.use(helmet());
   app.enableCors();
   app.useGlobalPipes(

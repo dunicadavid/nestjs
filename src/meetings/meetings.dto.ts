@@ -14,3 +14,8 @@ export class MeetingDto {
     @IsString({ each: true })
     users: string[];
 }
+
+export class MeetingUpdateDto extends MeetingDto{
+    @IsString()
+    _id: string;
+}

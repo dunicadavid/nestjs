@@ -1,39 +1,33 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Cron } from '@nestjs/schedule';
 import { Model } from 'mongoose';
-import { Meeting, MeetingDocument } from '../schemas/meeting.schema';
+import { MeetingGET, MeetingGETDocument, MeetingPOST, MeetingPOSTDocument } from '../schemas/meeting.schema';
 import { MeetingDto } from './meetings.dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class MeetingsService {
-  private readonly logger = new Logger(TasksService.name);
 
-  constructor(@InjectModel(Meeting.name) private meetingModel: Model<MeetingDocument>) {}
+  constructor(
+    @InjectModel(MeetingPOST.name) private meetingPOSTModel: Model<MeetingPOSTDocument>,
+    @InjectModel(MeetingPOST.name) private meetingGETModel: Model<MeetingGETDocument>
+  ) {}
 
-  async createMeeting(createMeetingDto: MeetingDto): Promise<Meeting> {
-    const createdMeeting = new this.meetingModel(createMeetingDto);
+  async createMeeting(createMeetingDto: MeetingDto): Promise<MeetingPOST> {
+    const createdMeeting = new this.meetingPOSTModel(createMeetingDto);
     return createdMeeting.save();
   }
 
-  async getAllMeetings(): Promise<Meeting[]> {
-    return this.meetingModel.find().select({ '__v': false }).exec();
+  async getAllMeetings(): Promise<MeetingGET[]> {
+    return this.meetingGETModel.find().select({ '__v': false }).exec();
   }
 
-  async getMeetingsToStart(): Promise<Meeting[]> {
+  async getMeetingsToStart(): Promise<MeetingGET[]> {
     const currentDate = new Date();
-    return this.meetingModel.find({ startDate: { $lte: currentDate }, status: 'scheduled' }).exec();
+    return this.meetingGETModel.find({ startDate: { $lte: currentDate }, status: 'scheduled' }).exec();
   }
 
-  @Cron('59 * * * * *') //move to cron.service + vezi gtp
-  handleCron(): void {
-    this.logger.debug('Called when the current second is 45');
-    const meetings = await this.getMeetingsToStart();
-      meetings.forEach(async (meeting) => {
-        if (meeting.startDate <= new Date()) {
-          await this.meetingsService.updateMeetingStatus(meeting._id, 'started');
-          this.logger.debug(`Meeting ${meeting._id} started`);
-        }
-      });
+  async updateMeetingStatus(id: string, status: string) {
+    return this.meetingGETModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
   }
 }
