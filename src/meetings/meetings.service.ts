@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { MeetingGET, MeetingGETDocument, MeetingPOST, MeetingPOSTDocument } from '../schemas/meeting.schema';
+import { Meeting, MeetingDocument } from '../schemas/meeting.schema';
 import { MeetingDto } from './meetings.dto';
 import { ObjectId } from 'mongodb';
 
@@ -9,25 +9,24 @@ import { ObjectId } from 'mongodb';
 export class MeetingsService {
 
   constructor(
-    @InjectModel(MeetingPOST.name) private meetingPOSTModel: Model<MeetingPOSTDocument>,
-    @InjectModel(MeetingPOST.name) private meetingGETModel: Model<MeetingGETDocument>
+    @InjectModel(Meeting.name) private meetingModel: Model<MeetingDocument>,
   ) {}
 
-  async createMeeting(createMeetingDto: MeetingDto): Promise<MeetingPOST> {
-    const createdMeeting = new this.meetingPOSTModel(createMeetingDto);
+  async createMeeting(createMeetingDto: MeetingDto): Promise<Meeting> {
+    const createdMeeting = new this.meetingModel(createMeetingDto);
     return createdMeeting.save();
   }
 
-  async getAllMeetings(): Promise<MeetingGET[]> {
-    return this.meetingGETModel.find().select({ '__v': false }).exec();
+  async getAllMeetings(): Promise<MeetingDocument[]> {
+    return this.meetingModel.find().select({ '__v': false }).exec();
   }
 
-  async getMeetingsToStart(): Promise<MeetingGET[]> {
+  async getMeetingsToStart(): Promise<MeetingDocument[]> {
     const currentDate = new Date();
-    return this.meetingGETModel.find({ startDate: { $lte: currentDate }, status: 'scheduled' }).exec();
+    return this.meetingModel.find({ startDate: { $lte: currentDate }, status: 'scheduled' }).exec();
   }
 
-  async updateMeetingStatus(id: string, status: string) {
-    return this.meetingGETModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
+  async updateMeetingStatus(id: string, status: string): Promise<MeetingDocument> {
+    return this.meetingModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
   }
 }

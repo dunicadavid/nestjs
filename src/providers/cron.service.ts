@@ -6,17 +6,20 @@ import { Cron } from '@nestjs/schedule';
 export class CronService {
   private readonly logger = new Logger(CronService.name);
 
-  constructor(private readonly meetingsService: MeetingsService) {}
+  constructor(private readonly meetingsService: MeetingsService) { }
 
-  @Cron('59 * * * * *') 
+  @Cron('59 * * * * *')
   async startCronJob(): Promise<void> {
     this.logger.debug('Called when the current second is 59');
+
     const meetings = await this.meetingsService.getMeetingsToStart();
-      meetings.forEach(async (meeting) => {
-        if (meeting.startDate <= new Date()) {
-          await this.meetingsService.updateMeetingStatus(meeting._id.toString(), 'started');
-          this.logger.debug(`Meeting ${meeting._id} started`);
-        }
-      });
+    await Promise.all(meetings.map((meeting) => new Promise<void>(async (res, rej) => {
+      if (meeting.startDate <= new Date()) {
+        await this.meetingsService.updateMeetingStatus(meeting._id.toString(), 'started');
+        this.logger.debug(`Meeting ${meeting._id} started`);
+      }
+
+      res();
+    })));
   }
 }
