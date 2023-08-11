@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { MeetingDto } from './meetings.dto';
 
@@ -14,5 +14,10 @@ export class MeetingsController {
   @Get()
   async getAllMeetings() {
     return this.meetingsService.getAllMeetings();
+  }
+
+  @Get(':id')
+  async getMeetingWithUsers(@Param('id') id: string) {
+    return this.meetingsService.getMeetingWithUsers(id);
   }
 }
