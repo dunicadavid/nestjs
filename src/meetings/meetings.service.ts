@@ -18,7 +18,10 @@ export class MeetingsService {
   }
 
   async getMeetingWithUsers(id: string): Promise<Meeting | null> {
-    return this.meetingModel.findById(id).populate({path: 'users', select: {'__v': false}}).select({ '__v': false }).exec();
+    return this.meetingModel.findById(id)
+      .populate({path: 'users', select: {'__v': false}})
+      .select({ '__v': false })
+      .exec();
   }
 
   async getAllMeetings(): Promise<MeetingDocument[]> {

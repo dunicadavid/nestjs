@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { MeetingsModule } from './meetings/meetings.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     ScheduleModule.forRoot(),
     MongooseModule.forRoot(process.env.DATABASE_URL), 
     UsersModule,
-    MeetingsModule, 
+    MeetingsModule,
+    AuthModule, 
   ],
 })
 export class AppModule {}

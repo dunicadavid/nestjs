@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../schemas/user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 import { UserDto } from './users.dto';
 import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
 
   async create(userDto: UserDto): Promise<User> {
     try {
@@ -21,7 +23,27 @@ export class UsersService {
     return this.userModel.find().select({'__v': false}).lean().exec();
   }
 
-  findOne(id: string): Promise<User> {
-    return this.userModel.findById(id).lean().exec();
+  findOne(id: string): Promise<UserDocument> {
+    return this.userModel.findById(id).exec();
+  }
+
+  findUserCredetials(email: string): Promise<UserDocument> {
+    return this.userModel
+      .findOne({ email })
+      .select({'__v': false, 'mobile': false, 'email': false, 'age': false })
+      .exec();
+  }
+
+  async updateProfileImage(id: string, filename: string): Promise<UserDocument> {
+    try {
+      console.log(filename);
+      return this.userModel.findByIdAndUpdate(
+        id,
+        { profileImage: filename },
+        { new: true },
+      ).exec();
+    } catch (err) {
+      throw err;
+    }
   }
 }

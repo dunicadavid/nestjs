@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException, UseGuards } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { MeetingDto } from './meetings.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('meetings')
+@UseGuards(AuthGuard)
 export class MeetingsController {
   constructor(private readonly meetingsService: MeetingsService) {}
 
