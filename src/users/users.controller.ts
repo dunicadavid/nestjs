@@ -1,16 +1,19 @@
-import { Get, Query, Post, Body, Put, Param, Res, HttpStatus, UseGuards, UseInterceptors, UseFilters, UploadedFile, ParseFilePipe, ParseFilePipeBuilder } from '@nestjs/common';
+import { Get, Query, Post, Body, Put, Param, HttpStatus, UseGuards, UseInterceptors, UseFilters, UploadedFile, ParseFilePipe, ParseFilePipeBuilder, NotFoundException, Res } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
+import { Response } from 'express';
 import { UsersService } from './users.service';
 import { RoleGuard } from '../guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { UserDto } from './users.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 
 @Controller('users')
-@UseGuards(RoleGuard)
+@UseGuards(AuthGuard, RoleGuard)
 @UseInterceptors(LoggingInterceptor)
 //@UseFilters(new HttpExceptionFilter())
 export class UsersController {
@@ -30,15 +33,32 @@ export class UsersController {
 
   @Get()
   @Roles('admin', 'user')
-  async findAll(@Query() query: any) {
+  async findAll() {
     return this.usersService.findAll();
   }
 
-  @Post('upload/:id')
+  @Get('/:id/photo')
   @Roles('admin', 'user')
-  @UseInterceptors(FileInterceptor('file'))
+  async getUserPhoto(@Param('id') id: string, @Res() res: Response) {
+    const imageName = await this.usersService.getProfileImage(id);
+    res.sendFile(imageName, { root: 'uploads' });
+  }
+
+
+  @Post('/:id/photo')
+  @Roles('admin', 'user')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './uploads', filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        const filename = `${uniqueSuffix}${ext}`;
+        cb(null, filename);
+      },
+    })
+  }))
   async uploadFile(
-    @Param('id') id: any,
+    @Param('id') id: string,
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
@@ -53,7 +73,6 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file);
-    return this.usersService.updateProfileImage(id, file.originalname);
+    return this.usersService.updateProfileImage(id, file.filename);
   }
 }

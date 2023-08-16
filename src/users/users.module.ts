@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { PasswordMiddleware } from 'src/middlewares/password.middleware';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../schemas/user.schema';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [

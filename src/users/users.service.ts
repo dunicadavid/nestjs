@@ -30,8 +30,13 @@ export class UsersService {
   findUserCredetials(email: string): Promise<UserDocument> {
     return this.userModel
       .findOne({ email })
-      .select({'__v': false, 'mobile': false, 'email': false, 'age': false })
+      .select({'__v': false, 'mobile': false, 'age': false })
       .exec();
+  }
+
+  async getProfileImage(id: string): Promise<string> {
+    const user = await this.userModel.findById(id).select('profileImage').exec();
+    return user.profileImage;
   }
 
   async updateProfileImage(id: string, filename: string): Promise<UserDocument> {
