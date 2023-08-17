@@ -41,7 +41,6 @@ export class UsersService {
 
   async updateProfileImage(id: string, filename: string): Promise<UserDocument> {
     try {
-      console.log(filename);
       return this.userModel.findByIdAndUpdate(
         id,
         { profileImage: filename },

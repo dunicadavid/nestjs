@@ -30,10 +30,15 @@ export class MeetingsService {
 
   async getMeetingsToStart(): Promise<MeetingDocument[]> {
     const currentDate = new Date();
-    return this.meetingModel.find({ startDate: { $lte: currentDate }, status: 'scheduled' }).exec();
+    return this.meetingModel.find({ 
+        startDate: { $lte: currentDate }, 
+        status: 'scheduled',
+      }).exec();
   }
 
   async updateMeetingStatus(id: string, status: string): Promise<MeetingDocument> {
-    return this.meetingModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
+    return this.meetingModel
+      .findByIdAndUpdate(id, { status }, { new: true })
+      .exec();
   }
 }
