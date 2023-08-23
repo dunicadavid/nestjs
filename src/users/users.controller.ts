@@ -11,7 +11,6 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 
 
 @ApiTags('Users')
@@ -19,7 +18,6 @@ import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 @Controller('users')
 @UseGuards(AuthGuard, RoleGuard)
 @UseInterceptors(LoggingInterceptor)
-//@UseFilters(new HttpExceptionFilter())
 export class UsersController {
   constructor(private usersService: UsersService) { }
 
@@ -38,7 +36,7 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   @Roles('admin', 'user')
-  findOne(@Param('id') id: any) {
+  findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 

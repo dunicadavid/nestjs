@@ -11,10 +11,11 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
+  @UseFilters(new HttpExceptionFilter())
   @Post('login')
   @ApiResponse({ status: 200, description: 'The operation has been successfull.'})
   @ApiResponse({ status: 401, description: 'Unauthorized.'})
-  signIn(@Body() signInDto: Record<string, any>) {
+  signIn(@Body() signInDto: Record<string, string>) {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
 }

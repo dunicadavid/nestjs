@@ -20,8 +20,8 @@ export class MeetingsController {
   @ApiResponse({ status: 403, description: 'Forbidden.'})
   @ApiResponse({ status: 422, description: 'Unprocessable Entity.'})
   @Roles('admin','user')
-  async createMeeting(@Body() createMeetingDto: MeetingDto) {
-    return this.meetingsService.createMeeting(createMeetingDto);
+  async createMeeting(@Body() meetingDetails: MeetingDto) {
+    return this.meetingsService.createMeeting(meetingDetails);
   }
 
   @Get()

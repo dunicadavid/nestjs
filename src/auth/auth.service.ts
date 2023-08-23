@@ -10,17 +10,17 @@ export class AuthService {
         private jwtService: JwtService
     ) {}
 
-  async signIn(email: string, pass: string): Promise<any> {
-    const user      = await this.usersService.findUserCredetials(email);
+  async signIn(emailAdress: string, pass: string): Promise<any> {
+    const user      = await this.usersService.findUserCredetials(emailAdress);
     const isMatch   = await bcrypt.compare(pass, user.password);
 
     if (!isMatch) {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user._id, email: user.email, role: user.role };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    }
+    const { _id, email, role }        = user;
+    const token: string               = await this.jwtService.signAsync({ _id, email, role });
+
+    return token;
   }
 }

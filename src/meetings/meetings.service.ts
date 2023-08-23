@@ -19,7 +19,7 @@ export class MeetingsService {
 
   async getMeetingWithUsers(id: string): Promise<Meeting | null> {
     return this.meetingModel.findById(id)
-      .populate({path: 'users', select: {'__v': false}})
+      .populate({path: 'users', select: {'__v': false, 'password': false}})
       .select({ '__v': false })
       .exec();
   }
@@ -38,7 +38,7 @@ export class MeetingsService {
 
   async updateMeetingStatus(id: string, status: string): Promise<MeetingDocument> {
     return this.meetingModel
-      .findByIdAndUpdate(id, { status }, { new: true })
+      .findByIdAndUpdate(id, { status })
       .exec();
   }
 }

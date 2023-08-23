@@ -10,16 +10,20 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   dotenv.config();
-  const app             = await NestFactory.create(AppModule);
-  const cronService     = app.get(CronService);
-  const config          = new DocumentBuilder()
+  const app = await NestFactory.create(AppModule, { logger: ['debug'] });
+
+  //cronjobs
+  const cronService = app.get(CronService);
+
+  //OpenAPI
+  const config = new DocumentBuilder()
     .setTitle('Users-Meetings API')
     .setDescription('Testing Nest features.')
     .setVersion('1.0')
     .build();
-  const document        = SwaggerModule.createDocument(app, config);
-
+  const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+  
   cronService.startCronJob();
   app.use(helmet());
   app.enableCors();

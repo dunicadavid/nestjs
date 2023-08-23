@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { UserDto } from './users.dto';
 import { Model } from 'mongoose';
+import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +16,7 @@ export class UsersService {
       const createUser = new this.userModel(userDto);
       return createUser.save();
     } catch (err) {
-      throw err;
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -47,7 +48,7 @@ export class UsersService {
         { new: true },
       ).exec();
     } catch (err) {
-      throw err;
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
